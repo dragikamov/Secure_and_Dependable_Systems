@@ -1,0 +1,230 @@
+\documentclass[a4paper]{article}
+\usepackage[pdftex]{hyperref}
+\usepackage[latin1]{inputenc}
+\usepackage[english]{babel}
+\usepackage{a4wide}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithmic}
+\usepackage{algorithm}
+\usepackage{ifthen}
+\usepackage{listings}
+
+\lstset{
+    escapeinside={(*}{*)}
+}
+
+% move the asterisk at the right position
+\lstset{basicstyle=\ttfamily,tabsize=4,literate={*}{${}^*{}$}1}
+%\lstset{language=C,basicstyle=\ttfamily}
+\usepackage{moreverb}
+\usepackage{palatino}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{comment}
+\usepackage{verbatim}
+\usepackage{color}
+
+% Manual margins
+\usepackage[left=2cm, right=2cm, top=4cm, bottom=4cm]{geometry}
+
+% Tab
+\newcommand\tab[1][1cm]{\hspace*{#1}}
+
+% HalfTab
+\newcommand\halftab[1][0.5cm]{\hspace*{#1}}
+
+%% pdflatex?
+\newif\ifpdf
+\ifx\pdfoutput\undefined
+\pdffalse % we are not running PDFLaTeX
+\else
+\pdfoutput=1 % we are running PDFLaTeX
+\pdftrue
+\fi
+\ifpdf
+\usepackage[pdftex]{graphicx}
+\else
+\usepackage{graphicx}
+\fi
+\ifpdf
+\DeclareGraphicsExtensions{.pdf, .jpg}
+\else
+\DeclareGraphicsExtensions{.eps, .jpg}
+\fi
+
+\parindent=0cm
+\parskip=0cm
+
+\setlength{\columnseprule}{0.4pt}
+\addtolength{\columnsep}{2pt}
+
+\addtolength{\textheight}{5.5cm}
+\addtolength{\topmargin}{-26mm}
+\pagestyle{empty}
+
+%%
+%% Sheet setup
+%% 
+\newcommand{\coursename}{Secure and Dependable Systems}
+\newcommand{\courseno}{CO21-320203}
+ 
+\newcommand{\sheettitle}{Homework}
+\newcommand{\mytitle}{}
+\newcommand{\mytoday}{\textcolor{blue}{March 14th}, 2019}
+
+% Current Assignment number
+\newcounter{assignmentno}
+\setcounter{assignmentno}{2}
+
+% Current Problem number, should always start at 1
+\newcounter{problemno}
+\setcounter{problemno}{1}
+
+%%
+%% problem and bonus environment
+%%
+\newcounter{probcalc}
+\newcommand{\problem}[2]{
+  \pagebreak[2]
+  \setcounter{probcalc}{#2}
+  ~\\
+  {\large \textbf{Problem \textcolor{blue}{\arabic{assignmentno}}.\textcolor{blue}{\arabic{problemno}}} \hspace{0.2cm}\textit{#1}} \refstepcounter{problemno}\vspace{2pt}\\}
+
+\newcommand{\bonus}[2]{
+  \pagebreak[2]
+  \setcounter{probcalc}{#2}
+  ~\\
+  {\large \textbf{Bonus Problem \textcolor{blue}{\arabic{assignmentno}}.\textcolor{blue}{\arabic{problemno}}} \hspace{0.2cm}\textit{#1}} \refstepcounter{problemno}\vspace{2pt}\\}
+
+%% some counters  
+\newcommand{\assignment}{\arabic{assignmentno}}
+
+%% solution  
+\newcommand{\solution}{\pagebreak[2]{\bf Solution:}\\}
+
+%% Hyperref Setup
+\hypersetup{pdftitle={Homework \assignment},
+  pdfsubject={\coursename},
+  pdfauthor={},
+  pdfcreator={},
+  pdfkeywords={Secure and Dependable Systems},
+  %  pdfpagemode={FullScreen},
+  %colorlinks=true,
+  %bookmarks=true,
+  %hyperindex=true,
+  bookmarksopen=false,
+  bookmarksnumbered=true,
+  breaklinks=true,
+  %urlcolor=darkblue
+  urlbordercolor={0 0 0.7}
+}
+
+\begin{document}
+\coursename \hfill Course: \courseno\\
+Jacobs University Bremen \hfill \mytoday\\
+\textcolor{blue}{Dragi Kamov}\hfill
+\vspace*{0.3cm}\\
+\begin{center}
+{\Large \sheettitle{} \textcolor{blue}{\assignment}\\}
+\end{center}
+
+\problem{}{0}
+\solution
+\begin{itemize}
+    \item[a)] \textbf{Translate the C function into Hoare language constructs and define the precondition and the
+    postcondition of the function $ exp() $ } \\\\
+    precondition \{ $ (n >= 0 ) $ \}
+    \begin{lstlisting}
+    1:  K := n
+    2:  P := x
+    3:  Y := 1
+    4:  WHILE (K > 0) DO
+    5:  IF (K % 2 = 0) THEN
+    6:  P := P * P
+    7:  K := K / 2
+    8:  ELSE
+    9:  Y := Y * P
+    10: K := K - 1
+    11: FI
+    12: OD
+    \end{lstlisting}
+    postcondition\{ $ y = x^n $ \}
+    \item[b)] \textbf{Add annotations for partial correctness}\\\\
+    precondition \{ $ (n >= 0 ) $ \}
+    \begin{lstlisting}
+    1:  K := n
+    2:  P := x
+    3:  Y := 1
+    (* \textit{ \{(K = n) $ \land $ (P = x) $ \land $ (Y = 1)\} } *)
+    4:  WHILE (K > 0) DO
+    (* \textit{ \{(Y $ * $ exp(P,K) == exp(x,n))\}} *)
+    5:  IF (K % 2 = 0) THEN
+    6:  P := P * P
+    7:  K := K / 2
+    8:  ELSE
+    9:  Y := Y * P
+    10: K := K - 1
+    11: FI
+    12: OD
+    \end{lstlisting}
+    postcondition\{ $ Y * exp(P,K) == exp(x,n) $ \}
+    \item[c)] \textbf{Derive verification conditions for partial correctness} \\\\
+    $ (n >= 0) \rightarrow ((K = n) \land (P = x) \land (Y = 1)) $\\
+    $ ((K = n) \land (P = x) \land (Y = 1)) \rightarrow (Y * exp(P,K) == exp(x,n)) $\\
+    $ (Y * exp(P,K) == exp(x,n)) \land (K > 0) \land (K \% 2 == 0) \rightarrow (Y * exp(P,K) == exp(x,n)) $\\
+    $ (Y * exp(P,K) == exp(x,n)) \land (K > 0) \land (K \% 2 \text{ } != 0) \rightarrow (Y * exp(P,K) == exp(x,n)) $\\
+    \newpage
+    \item[d)] \textbf{Prove the partial correctness verification conditions} \\\\
+    \{$ n >= 0 $\} K = n; P = x; Y = 1 $ \{(K = n) \land (P = x) \land (Y = 1)\} $\\
+    Substitution method \\
+    $ \{(n >= 0)\} \{(n = (n \land x) = (x \land 1) = 1)\} $ \\
+    $ (n >= 0) \rightarrow (T \land T \land T) $
+    Tautology method \\
+    $ (n >= 0) \rightarrow (T) $ \\\\
+    $ \{ (Y * exp(P,K) == exp(x,n)) \land (K > 0) \land (K \% 2 == 0)\} P = P * P, K = K / 2 \{Y * exp(P,K) == exp(x,n)\} $ \\
+    Substitution method \\
+    $\{ (Y * exp(P,K) == exp(x,n)) \land (K > 0) \land (K \% 2 == 0)\} \{Y * exp(P^2,K/2) == exp(x,n)\}$ \\
+    $((Y * exp(P,K) == exp(x,n)) \land (K > 0) \land (K \% 2 == 0)) \rightarrow (Y * exp(P,K) == exp(x,n)) $ \\
+    The following is holding true by implication, given that the loop invariant is true. \\\\
+    $\{ (Y * exp(P,K) == exp(x,n)) \land (K > 0) \land (K \% 2 \text{ } != 0)\} $ Y = Y * P; K = K - 1 $ \{Y * exp(P,K) == exp(x,n)\} $ \\
+    $\{ (Y * exp(P,K) == exp(x,n)) \land (K > 0) \land (K \% 2 \text{ } != 0)\} \{Y * P * exp(P,K-1) == exp(x,n)\} $ \\
+    Multiplicative identity. \\
+    $((Y * exp(P,K) == exp(x,n)) \land (K > 0) \land (K \% 2 \text{ } != 0)) \rightarrow (Y * exp(P,K) == exp(x,n)) $ \\
+    The following is holding true by implication, given that the loop invariant is true.
+    \item[e)] \textbf{Add additional annotations for total correctness} \\\\
+    precondition \{ $ n >= 0 $ \}
+    \begin{lstlisting}
+    (* \textit{ \{(K = n) $ \land $ (P = x) $ \land $ (Y = 1)\} } *)
+    1:  K := n
+    2:  P := x
+    3:  Y := 1
+    4:  WHILE (K > 0) DO
+    (* \textit{ \{(Y $ * $ exp(P,K) == exp(x,n)) $ \land $ ((( K \% 2 = 0 ) $ \lor $ (K \% 2 != 0)) $ \land $ (K >= 0))\}} *)
+    5:  IF (K % 2 = 0) THEN
+    6:  P := P * P
+    7:  K := K / 2
+    8:  ELSE
+    9:  Y := Y * P
+    10: K := K - 1
+    11: FI
+    12: OD
+    \end{lstlisting}
+    postcondition\{ $ Y * exp(P,K) == exp(x,n) \land (K >= 0) $ \}
+    \item[f)] \textbf{Derive or update verification conditions for total correctness} \\\\
+    $ (n >= 0) \rightarrow ((K = n) \land (P = x) \land (Y = 1)) $\\
+    $ ((K = n) \land (P = x) \land (Y = 1)) \rightarrow (Y * exp(P,K) == exp(x,n) \land (K > 0)) $\\
+    $ (Y * exp(P,K) == exp(x,n)) \rightarrow ((K \% 2 == 0) \lor (K \% 2 \text{ } != 0)) $\\
+    $ (K \% 2 == 0) \rightarrow (Y * exp(P,K) == exp(x,n) \land (K >= 0)) $\\
+    $ (K \% 2 \text{ } != 0) \rightarrow (Y* exp(P,K) == exp(x,n) \land (K >= 0)) $
+    \item[g)] \textbf{Prove the total correctness verification conditions} \\\\
+    \{$ ((Y * exp(P,K) == exp(x,n)) \land (( K \% 2 == 0 ) \lor (K \% 2 \text{ } != 0) \land (K > 0)) $\} \{$ (Y * exp(P,K) == exp(x,n)) $\}
+    
+    1. The loop terminates. \\ 
+    2. For the program to terminate, K must be less than 0 at some point in time. And since K is decreasing with each step the program is going to terminate. \\ 
+    K decreases in the following two ways: \\
+    1) If K is even, then K gets divided by half. .\\
+    2) If K is odd, then K gets decremented by 1, which is quite obviously decreasing. 
+\end{itemize}
+
+\end{document}
